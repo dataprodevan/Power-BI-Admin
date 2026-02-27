@@ -1,0 +1,32 @@
+﻿name: Test Power BI Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    env:
+      TENANT_ID: ${{ secrets.TENANT_ID }}
+      POWER_BI_APP_ID: ${{ secrets.POWER_BI_APP_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Debug env presence (safe)
+        shell: pwsh
+        run: |
+          if ($env:TENANT_ID) { "TENANT_ID present" } else { "TENANT_ID missing" }
+          if ($env:POWER_BI_APP_ID) { "POWER_BI_APP_ID present" } else { "POWER_BI_APP_ID missing" }
+          if ($env:CLIENT_SECRET) { "CLIENT_SECRET present" } else { "CLIENT_SECRET missing" }
+
+      - name: Install module
+        shell: pwsh
+        run: |
+          .\tools\Install-Modules.ps1
+
+      - name: Run connection test
+        shell: pwsh
+        run: |
+          .\src\Test-Connection.ps1
