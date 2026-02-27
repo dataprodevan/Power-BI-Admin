@@ -1,0 +1,23 @@
+﻿name: Validate PowerShell
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate PowerShell Syntax
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $files = Get-ChildItem -Recurse -Include *.ps1
+          if (-not $files) { exit 0 }
+
+          foreach ($file in $files) {
+              Write-Host "Parsing $($file.FullName)"
+              [void][System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$null)
+          }
