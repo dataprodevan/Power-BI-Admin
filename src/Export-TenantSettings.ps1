@@ -1,17 +1,16 @@
-﻿$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Stop"
 
-Write-Host "Connecting to Power BI..."
-Connect-PowerBIServiceAccount
+Import-Module "$PSScriptRoot\..\modules\PowerBIAdmin\PowerBIAdmin.psd1" -Force
 
-$headers = @{
-    Authorization = "Bearer $((Get-PowerBIAccessToken).Token)"
+$tenantId = $env:TENANT_ID
+$clientId = $env:CLIENT_ID
+$secret   = $env:CLIENT_SECRET
+
+if (-not $tenantId -or -not $clientId -or -not $secret) {
+    throw "Missing TENANT_ID, CLIENT_ID, or CLIENT_SECRET"
 }
 
-$uri = "https://api.powerbi.com/v1.0/myorg/admin/tenantsettings"
+Connect-PbiServicePrincipal -TenantId $tenantId -ClientId $clientId -ClientSecret $secret
 
-Write-Host "Calling API..."
-$response = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
-
-$response | ConvertTo-Json -Depth 100 | Out-File "tenantsettings.json"
-
-Write-Host "Export complete."
+$out = Export-PbiTenantSettings -OutPath ".\exports"
+Write-Host "Wrote: $out"
