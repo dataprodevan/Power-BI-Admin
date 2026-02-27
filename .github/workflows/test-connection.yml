@@ -21,10 +21,10 @@ jobs:
           if ($env:POWER_BI_APP_ID) { "POWER_BI_APP_ID present" } else { "POWER_BI_APP_ID missing" }
           if ($env:CLIENT_SECRET) { "CLIENT_SECRET present" } else { "CLIENT_SECRET missing" }
 
-      - name: Install module
-        shell: pwsh
-        run: |
-          .\tools\Install-Modules.ps1
+     - name: Install Power BI PowerShell (MSI)
+  shell: pwsh
+  run: |
+    .\tools\Install-Modules.ps1
 
       - name: Run connection test
         shell: pwsh
